@@ -1,0 +1,5 @@
+model,cv_rmse_mean,cv_rmse_std,cv_mae_mean,cv_mae_std,cv_r2_mean,cv_r2_std,test_rmse,test_mae,test_r2_pooled,test_r2_band
+Dummy,0.70676,0.15091,0.47292,0.19583,-52.65194,104.40895,,,,
+Ridge,0.51813,0.07585,0.24205,0.09988,-34.84578,70.08488,,,,
+RandomForest,0.33052,0.02632,0.08995,0.01565,-0.6464,2.9696,0.10003,0.0694,0.9778,0.98409
+HistGradientBoosting,0.35044,0.07955,0.10121,0.04185,-0.3267,2.27263,,,,
