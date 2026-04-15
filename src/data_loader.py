@@ -13,16 +13,12 @@ from spacetrack import SpaceTrackClient
 # Carrega as variáveis do arquivo .env
 load_dotenv()
 
-# Caminho da pasta de dados brutos
 RAW_DIR = Path("data/raw")
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_client() -> SpaceTrackClient:
-    """
-    Cria e retorna um cliente autenticado do Space-Track.
-    Lê as credenciais do arquivo .env
-    """
+
     user = os.getenv("SPACETRACK_USER")
     password = os.getenv("SPACETRACK_PASS")
 
@@ -36,25 +32,8 @@ def get_client() -> SpaceTrackClient:
 
     return SpaceTrackClient(identity=user, password=password)
 
-
-# ─────────────────────────────────────────────────────────────────
-# SATCAT — Catálogo histórico de todos os objetos já lançados
-# Contém: nome, data de lançamento, tipo (payload/debris/rocket),
-#         país, status (em órbita ou decaído), altitude de perigeu/apogeu
-# ─────────────────────────────────────────────────────────────────
-
 def fetch_satcat(force_download: bool = False) -> pd.DataFrame:
-    """
-    Baixa o catálogo completo de objetos espaciais (satcat).
-    
-    É a nossa fonte principal para:
-      - Analisar crescimento de objetos ao longo dos anos
-      - Separar por tipo (payload, debris, rocket body)
-      - Ver evolução histórica desde 1957
 
-    Parâmetros:
-        force_download: se True, baixa de novo mesmo que o arquivo já exista
-    """
     output_path = RAW_DIR / "satcat.csv"
 
     if output_path.exists() and not force_download:
@@ -79,26 +58,8 @@ def fetch_satcat(force_download: bool = False) -> pd.DataFrame:
     print(f"[satcat] {len(df):,} objetos no catálogo.")
     return df
 
-
-# ─────────────────────────────────────────────────────────────────
-# GP — Elementos orbitais atuais de objetos em LEO
-# Contém: altitude, inclinação, excentricidade, período, etc.
-# Fonte para: distribuição por altitude, métrica de densidade/risco
-# ─────────────────────────────────────────────────────────────────
-
 def fetch_gp_leo(force_download: bool = False) -> pd.DataFrame:
-    """
-    Baixa os elementos orbitais atuais de objetos em LEO.
-    
-    Filtra automaticamente por LEO:
-      - mean_motion > 11.25 rev/dia → período < ~128 min → altitude < ~2000 km
-      - decay_date nulo → objeto ainda em órbita (não decaiu)
 
-    É a nossa fonte para:
-      - Distribuição de objetos por faixa de altitude
-      - Cálculo de densidade orbital
-      - Métrica de risco de colisão
-    """
     output_path = RAW_DIR / "gp_leo.csv"
 
     if output_path.exists() and not force_download:
@@ -127,11 +88,6 @@ def fetch_gp_leo(force_download: bool = False) -> pd.DataFrame:
     df = pd.read_csv(output_path, low_memory=False)
     print(f"[gp_leo] {len(df):,} objetos em LEO carregados.")
     return df
-
-
-# ─────────────────────────────────────────────────────────────────
-# TESTE — rode com: python src/data_loader.py
-# ─────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
 
