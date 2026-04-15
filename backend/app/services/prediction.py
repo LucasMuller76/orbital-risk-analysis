@@ -27,7 +27,6 @@ RISK_HIGH_THRESHOLD: float = 1.0
 
 
 def risk_category(cps_log: float) -> str:
-    """Map a CPS_log value to a risk category string."""
     if cps_log < RISK_LOW_THRESHOLD:
         return "LOW"
     if cps_log <= RISK_HIGH_THRESHOLD:
@@ -36,10 +35,7 @@ def risk_category(cps_log: float) -> str:
 
 
 def align_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Return a copy of df with exactly FEATURES_ML columns in the right order.
 
-    Raises ValueError if any required column is missing.
-    """
     missing = [f for f in FEATURES_ML if f not in df.columns]
     if missing:
         raise ValueError(f"Missing required features: {missing}")
@@ -47,10 +43,7 @@ def align_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def predict_single(model, values: dict) -> tuple[float, str]:
-    """Predict CPS_log for a single object given a dict of feature values.
 
-    Returns (predicted_cps_log, risk_category).
-    """
     row = pd.DataFrame([values])
     X = align_features(row)
     cps_log = float(model.predict(X)[0])

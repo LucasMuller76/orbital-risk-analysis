@@ -102,9 +102,7 @@ class CorrelationResponse(BaseModel):
     pearson_r: float
 
 
-# ---------------------------------------------------------------------------
 # Predict schemas
-# ---------------------------------------------------------------------------
 
 class PredictRequest(BaseModel):
     altitude_km: float = Field(default=750.0, ge=150, le=2000, description="Orbital altitude in km")
