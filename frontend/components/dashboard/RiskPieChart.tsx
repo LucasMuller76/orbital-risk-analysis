@@ -17,6 +17,12 @@ const COLORS: Record<string, string> = {
   LOW:    "#10b981",
 };
 
+const LABELS: Record<string, string> = {
+  HIGH:   "Alto Risco",
+  MEDIUM: "Risco Médio",
+  LOW:    "Baixo Risco",
+};
+
 export function RiskPieChart() {
   const { data, isLoading } = useSummary();
 
@@ -47,14 +53,16 @@ export function RiskPieChart() {
           ))}
         </Pie>
         <Tooltip
-          contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e4e4e7" }}
-          formatter={(v) => [formatNumber(Number(v)), "Objects"] as [string, string]}
+          contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #334155", background: "#0f172a", color: "#e2e8f0" }}
+          labelStyle={{ color: "#94a3b8" }}
+          itemStyle={{ color: "#e2e8f0" }}
+          formatter={(v, name) => [formatNumber(Number(v)), LABELS[String(name)] ?? String(name)] as [string, string]}
         />
         <Legend
           iconType="circle"
           iconSize={8}
           formatter={(value) => (
-            <span style={{ fontSize: 12, color: "#71717a" }}>{value}</span>
+            <span style={{ fontSize: 12, color: "#94a3b8" }}>{LABELS[value] ?? value}</span>
           )}
         />
       </PieChart>

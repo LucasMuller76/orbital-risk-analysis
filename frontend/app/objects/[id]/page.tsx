@@ -8,6 +8,7 @@ import { RiskBadge } from "@/components/objects/RiskBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { featureLabel, formatCPS, riskHex } from "@/lib/utils";
+import { useLanguage } from "@/lib/language-context";
 import type { RiskCategory } from "@/lib/types";
 import {
   Bar,
@@ -28,9 +29,9 @@ const FEATURE_KEYS = [
 
 function FeatureRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between border-b border-zinc-100 py-2.5 last:border-0">
-      <span className="text-sm text-zinc-500">{label}</span>
-      <span className="font-mono text-sm text-zinc-900">{value}</span>
+    <div className="flex items-center justify-between border-b border-slate-800 py-2.5 last:border-0">
+      <span className="text-sm text-slate-400">{label}</span>
+      <span className="font-mono text-sm text-slate-200">{value}</span>
     </div>
   );
 }
@@ -51,6 +52,8 @@ export default function ObjectDetailPage({
 }) {
   const { id } = use(params);
   const noradId = parseInt(id, 10);
+  const { t } = useLanguage();
+  const od = t.objectDetail;
 
   const { data: obj, isLoading: objLoading } = useObject(isNaN(noradId) ? null : noradId);
   const { data: importances, isLoading: impLoading } = useFeatureImportance();
@@ -66,8 +69,8 @@ export default function ObjectDetailPage({
 
   if (!obj) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
-        Object {noradId} not found.
+      <div className="rounded-2xl border border-red-800/50 bg-red-950/30 p-6 text-red-400">
+        {od.notFound.replace("{id}", String(noradId))}
       </div>
     );
   }
@@ -77,12 +80,12 @@ export default function ObjectDetailPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-sm text-zinc-500">
-        <Link href="/" className="hover:text-zinc-900">Dashboard</Link>
+      <nav className="flex items-center gap-1 text-sm text-slate-500">
+        <Link href="/" className="hover:text-slate-300 transition-colors">{od.breadDashboard}</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <Link href="/objects" className="hover:text-zinc-900">Objects</Link>
+        <Link href="/objects" className="hover:text-slate-300 transition-colors">{od.breadObjects}</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-zinc-900 font-medium">{obj.norad_cat_id}</span>
+        <span className="text-slate-300 font-medium">{obj.norad_cat_id}</span>
       </nav>
 
       {/* Header card */}
@@ -90,16 +93,16 @@ export default function ObjectDetailPage({
         <CardContent className="pt-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-zinc-400 mb-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500 mb-1">
                 NORAD {obj.norad_cat_id}
               </p>
-              <h1 className="text-2xl font-bold text-zinc-900">{obj.object_type}</h1>
-              <p className="mt-1 text-sm text-zinc-500">
-                Altitude band: <span className="font-medium text-zinc-700">{obj.altitude_band} km</span>
+              <h1 className="text-2xl font-bold text-slate-100">{obj.object_type}</h1>
+              <p className="mt-1 text-sm text-slate-400">
+                {od.altitudeBand}: <span className="font-medium text-slate-300">{obj.altitude_band} km</span>
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-zinc-400 mb-1.5">Predicted CPS_log</p>
+              <p className="text-xs text-slate-500 mb-1.5">{od.predictedCps}</p>
               <p className="text-4xl font-bold" style={{ color: riskHex(riskCat) }}>
                 {formatCPS(obj.predicted_CPS_log)}
               </p>
@@ -115,7 +118,7 @@ export default function ObjectDetailPage({
         {/* Feature grid */}
         <Card>
           <CardHeader>
-            <CardTitle>Orbital Features</CardTitle>
+            <CardTitle>{od.orbitalParams}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             {FEATURE_KEYS.map((key) => (
@@ -131,7 +134,7 @@ export default function ObjectDetailPage({
         {/* Feature importance */}
         <Card>
           <CardHeader>
-            <CardTitle>Model Feature Importance (global)</CardTitle>
+            <CardTitle>{od.featureImportance}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             {impLoading || !importances ? (
@@ -143,33 +146,35 @@ export default function ObjectDetailPage({
                   data={[...importances].reverse()}
                   margin={{ top: 0, right: 16, bottom: 0, left: 140 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" horizontal={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
                   <XAxis
                     type="number"
-                    tick={{ fontSize: 10, fill: "#71717a" }}
+                    tick={{ fontSize: 10, fill: "#64748b" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
                     type="category"
                     dataKey="feature"
-                    tick={{ fontSize: 11, fill: "#3f3f46" }}
+                    tick={{ fontSize: 11, fill: "#94a3b8" }}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={featureLabel}
                     width={138}
                   />
                   <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e4e4e7" }}
-                    formatter={(v) => [`${(Number(v) * 100).toFixed(2)}%`, "Importance"] as [string, string]}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #334155", background: "#0f172a", color: "#e2e8f0" }}
+                    labelStyle={{ color: "#94a3b8" }}
+                    itemStyle={{ color: "#e2e8f0" }}
+                    formatter={(v) => [`${(Number(v) * 100).toFixed(2)}%`, od.importancePct] as [string, string]}
                     labelFormatter={(l) => featureLabel(String(l))}
                   />
                   <Bar dataKey="importance" radius={[0, 3, 3, 0]}>
                     {importances.map((_, i) => (
                       <Cell
                         key={i}
-                        fill="#3b82f6"
-                        fillOpacity={0.7 + 0.3 * (1 - i / importances.length)}
+                        fill="#22d3ee"
+                        fillOpacity={0.5 + 0.5 * (1 - i / importances.length)}
                       />
                     ))}
                   </Bar>

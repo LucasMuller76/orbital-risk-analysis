@@ -6,27 +6,24 @@ import { useObjects } from "@/hooks/useObjects";
 import { RiskBadge } from "./RiskBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatAltitude, formatCPS, formatNumber } from "@/lib/utils";
+import { useLanguage } from "@/lib/language-context";
 import type { RiskCategory } from "@/lib/types";
 
 type SortKey = "predicted_CPS_log" | "altitude_km" | "inclination_deg" | "velocity_km_s";
 type SortOrder = "asc" | "desc";
 
-const RISK_FILTERS: Array<{ label: string; value: RiskCategory | "" }> = [
-  { label: "All", value: "" },
-  { label: "High", value: "HIGH" },
-  { label: "Medium", value: "MEDIUM" },
-  { label: "Low", value: "LOW" },
-];
-
-function SortIcon({ col, active, order }: { col: string; active: boolean; order: SortOrder }) {
-  if (!active) return <ArrowUpDown className="ml-1 h-3 w-3 text-zinc-400" />;
+function SortIcon({ active, order }: { active: boolean; order: SortOrder }) {
+  if (!active) return <ArrowUpDown className="ml-1 h-3 w-3 text-slate-600" />;
   return order === "asc"
-    ? <ArrowUp className="ml-1 h-3 w-3 text-zinc-700" />
-    : <ArrowDown className="ml-1 h-3 w-3 text-zinc-700" />;
+    ? <ArrowUp className="ml-1 h-3 w-3 text-cyan-400" />
+    : <ArrowDown className="ml-1 h-3 w-3 text-cyan-400" />;
 }
 
 export function ObjectsTable() {
   const router = useRouter();
+  const { t } = useLanguage();
+  const o = t.objects;
+
   const [page, setPage] = useState(1);
   const [risk, setRisk] = useState<RiskCategory | "">("");
   const [search, setSearch] = useState("");
@@ -37,7 +34,7 @@ export function ObjectsTable() {
 
   const handleSort = useCallback((col: SortKey) => {
     if (col === sort) {
-      setOrder((o) => (o === "asc" ? "desc" : "asc"));
+      setOrder((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
       setSort(col);
       setOrder("desc");
@@ -48,36 +45,41 @@ export function ObjectsTable() {
   const handleRisk = (r: RiskCategory | "") => { setRisk(r); setPage(1); };
   const handleSearch = (v: string) => { setSearch(v); setPage(1); };
 
+  const RISK_FILTERS: Array<{ label: string; value: RiskCategory | "" }> = [
+    { label: o.filters.all,    value: "" },
+    { label: o.filters.high,   value: "HIGH" },
+    { label: o.filters.medium, value: "MEDIUM" },
+    { label: o.filters.low,    value: "LOW" },
+  ];
+
   const COLS: Array<{ key: SortKey; label: string }> = [
-    { key: "altitude_km",      label: "Altitude" },
-    { key: "inclination_deg",  label: "Inclination" },
-    { key: "velocity_km_s",    label: "Velocity" },
-    { key: "predicted_CPS_log",label: "CPS_log" },
+    { key: "altitude_km",       label: o.cols.altitude },
+    { key: "inclination_deg",   label: o.cols.inclination },
+    { key: "velocity_km_s",     label: o.cols.velocity },
+    { key: "predicted_CPS_log", label: o.cols.cps },
   ];
 
   return (
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
           <input
             type="text"
-            placeholder="NORAD ID or type..."
+            placeholder={o.searchPlaceholder}
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            className="h-9 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+            className="h-9 rounded-xl border border-slate-700 bg-slate-800 pl-9 pr-8 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50"
           />
           {search && (
             <button onClick={() => handleSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2">
-              <X className="h-3.5 w-3.5 text-zinc-400 hover:text-zinc-700" />
+              <X className="h-3.5 w-3.5 text-slate-500 hover:text-slate-300" />
             </button>
           )}
         </div>
 
-        {/* Risk filter buttons */}
-        <div className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-white p-1">
+        <div className="flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-800 p-1">
           {RISK_FILTERS.map((f) => (
             <button
               key={f.value}
@@ -85,8 +87,8 @@ export function ObjectsTable() {
               className={cn(
                 "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
                 risk === f.value
-                  ? "bg-zinc-900 text-white"
-                  : "text-zinc-600 hover:bg-zinc-100",
+                  ? "bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/25"
+                  : "text-slate-400 hover:bg-slate-700 hover:text-slate-200",
               )}
             >
               {f.label}
@@ -95,40 +97,40 @@ export function ObjectsTable() {
         </div>
 
         {data && (
-          <span className="ml-auto text-sm text-zinc-500">
-            {formatNumber(data.total)} objects
+          <span className="ml-auto text-sm text-slate-500">
+            {formatNumber(data.total)} {o.objectsCount}
           </span>
         )}
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900 shadow-lg shadow-black/20">
         <table className="w-full text-sm">
-          <thead className="border-b border-zinc-100 bg-zinc-50/60">
+          <thead className="border-b border-slate-800 bg-slate-800/50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-zinc-500">
-                NORAD ID
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                {o.cols.norad}
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-zinc-500">
-                Type
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                {o.cols.type}
               </th>
               {COLS.map((c) => (
                 <th key={c.key} className="px-4 py-3 text-left">
                   <button
                     onClick={() => handleSort(c.key)}
-                    className="flex items-center text-xs font-medium uppercase tracking-wide text-zinc-500 hover:text-zinc-900"
+                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
                   >
                     {c.label}
-                    <SortIcon col={c.key} active={sort === c.key} order={order} />
+                    <SortIcon active={sort === c.key} order={order} />
                   </button>
                 </th>
               ))}
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-zinc-500">
-                Risk
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                {o.cols.risk}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100">
+          <tbody className="divide-y divide-slate-800">
             {isLoading
               ? [...Array(10)].map((_, i) => (
                   <tr key={i}>
@@ -143,21 +145,15 @@ export function ObjectsTable() {
                   <tr
                     key={obj.norad_cat_id}
                     onClick={() => router.push(`/objects/${obj.norad_cat_id}`)}
-                    className="cursor-pointer transition-colors hover:bg-zinc-50"
+                    className="cursor-pointer transition-colors hover:bg-slate-800/60"
                   >
-                    <td className="px-4 py-3 font-mono text-xs text-zinc-700">
-                      {obj.norad_cat_id}
-                    </td>
-                    <td className="px-4 py-3 text-zinc-700">{obj.object_type}</td>
-                    <td className="px-4 py-3 text-zinc-700">{formatAltitude(obj.altitude_km)}</td>
-                    <td className="px-4 py-3 text-zinc-700">{obj.inclination_deg.toFixed(2)}°</td>
-                    <td className="px-4 py-3 text-zinc-700">{obj.velocity_km_s.toFixed(3)} km/s</td>
-                    <td className="px-4 py-3 font-mono text-zinc-900 font-medium">
-                      {formatCPS(obj.predicted_CPS_log)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <RiskBadge category={obj.risk_category} size="sm" />
-                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-slate-400">{obj.norad_cat_id}</td>
+                    <td className="px-4 py-3 text-slate-300">{obj.object_type}</td>
+                    <td className="px-4 py-3 text-slate-300">{formatAltitude(obj.altitude_km)}</td>
+                    <td className="px-4 py-3 text-slate-300">{obj.inclination_deg.toFixed(2)}°</td>
+                    <td className="px-4 py-3 text-slate-300">{obj.velocity_km_s.toFixed(3)} km/s</td>
+                    <td className="px-4 py-3 font-mono text-slate-100 font-semibold">{formatCPS(obj.predicted_CPS_log)}</td>
+                    <td className="px-4 py-3"><RiskBadge category={obj.risk_category} size="sm" /></td>
                   </tr>
                 ))}
           </tbody>
@@ -167,23 +163,23 @@ export function ObjectsTable() {
       {/* Pagination */}
       {data && data.pages > 1 && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-zinc-500">
-            Page {data.page} of {data.pages}
+          <span className="text-slate-500">
+            {o.page} {data.page} {o.of} {data.pages}
           </span>
           <div className="flex items-center gap-1">
             <button
               disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              Previous
+              {o.prev}
             </button>
             <button
               disabled={page === data.pages}
               onClick={() => setPage((p) => p + 1)}
-              className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              Next
+              {o.next}
             </button>
           </div>
         </div>

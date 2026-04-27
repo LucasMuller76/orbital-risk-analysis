@@ -1,3 +1,5 @@
+"use client";
+import { useLanguage } from "@/lib/language-context";
 import { TopBar } from "@/components/layout/TopBar";
 import { KpiCards } from "@/components/dashboard/KpiCards";
 import { RiskHistogram } from "@/components/dashboard/RiskHistogram";
@@ -7,19 +9,20 @@ import { RiskScatter } from "@/components/dashboard/RiskScatter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
+  const d = t.dashboard;
+
   return (
     <div className="space-y-6">
-      <TopBar
-        title="Dashboard"
-        subtitle="LEO collision risk overview — 27,994 tracked objects"
-      />
+      <TopBar title={d.title} subtitle={d.subtitle} />
 
       <KpiCards />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle>CPS_log Distribution</CardTitle>
+            <CardTitle>{d.histTitle}</CardTitle>
+            <p className="text-xs text-slate-500 mt-1">{d.histDesc}</p>
           </CardHeader>
           <CardContent>
             <RiskHistogram />
@@ -28,7 +31,8 @@ export default function DashboardPage() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Risk Category Split</CardTitle>
+            <CardTitle>{d.pieTitle}</CardTitle>
+            <p className="text-xs text-slate-500 mt-1">{d.pieDesc}</p>
           </CardHeader>
           <CardContent>
             <RiskPieChart />
@@ -38,7 +42,8 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Mean CPS_log by Altitude Band (50 km bins)</CardTitle>
+          <CardTitle>{d.altTitle}</CardTitle>
+          <p className="text-xs text-slate-500 mt-1">{d.altDesc}</p>
         </CardHeader>
         <CardContent>
           <AltitudeBarChart />
@@ -47,7 +52,8 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Altitude vs Predicted Risk — sample of 2,000 objects</CardTitle>
+          <CardTitle>{d.scatterTitle}</CardTitle>
+          <p className="text-xs text-slate-500 mt-1">{d.scatterDesc}</p>
         </CardHeader>
         <CardContent>
           <RiskScatter />

@@ -1,14 +1,14 @@
 "use client";
 import { useLanguage } from "@/lib/language-context";
 import { TopBar } from "@/components/layout/TopBar";
-import { ObjectsTable } from "@/components/objects/ObjectsTable";
+import { PredictForm } from "@/components/predicao/PredictForm";
 
-export default function ObjectsPage() {
+export default function PredicaoPage() {
   const { t } = useLanguage();
   return (
     <div className="space-y-6">
-      <TopBar title={t.objects.title} subtitle={t.objects.subtitle} />
-      <ObjectsTable />
+      <TopBar title={t.predict.title} subtitle={t.predict.subtitle} />
+      <PredictForm />
     </div>
   );
 }

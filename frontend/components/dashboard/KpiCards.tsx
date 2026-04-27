@@ -4,33 +4,36 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSummary } from "@/hooks/useAnalytics";
 import { formatCPS, formatNumber, formatPct } from "@/lib/utils";
 import { Globe, AlertTriangle, ShieldCheck, Activity } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 function KpiCard({
   title,
   value,
   sub,
   icon: Icon,
-  accent,
+  accentBg,
+  accentText,
 }: {
   title: string;
   value: string;
   sub?: string;
   icon: React.ElementType;
-  accent: string;
+  accentBg: string;
+  accentText: string;
 }) {
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{title}</CardTitle>
-          <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${accent}`}>
-            <Icon className="h-4 w-4" />
+          <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${accentBg}`}>
+            <Icon className={`h-4 w-4 ${accentText}`} />
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-bold text-zinc-900">{value}</p>
-        {sub && <p className="mt-1 text-xs text-zinc-500">{sub}</p>}
+        <p className="text-3xl font-bold text-slate-100">{value}</p>
+        {sub && <p className="mt-1 text-xs text-slate-500">{sub}</p>}
       </CardContent>
     </Card>
   );
@@ -38,6 +41,7 @@ function KpiCard({
 
 export function KpiCards() {
   const { data, isLoading } = useSummary();
+  const { t } = useLanguage();
 
   if (isLoading || !data) {
     return (
@@ -57,32 +61,36 @@ export function KpiCards() {
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       <KpiCard
-        title="Total Objects"
+        title={t.kpi.totalObjects}
         value={formatNumber(data.total_objects)}
-        sub="LEO objects tracked"
+        sub={t.kpi.trackedSub}
         icon={Globe}
-        accent="bg-blue-50 text-blue-600"
+        accentBg="bg-cyan-500/10"
+        accentText="text-cyan-400"
       />
       <KpiCard
-        title="Avg CPS Score"
+        title={t.kpi.avgCps}
         value={formatCPS(data.mean_cps)}
-        sub={`std ${formatCPS(data.std_cps)}`}
+        sub={`${t.kpi.stdSub}: ${formatCPS(data.std_cps)}`}
         icon={Activity}
-        accent="bg-zinc-100 text-zinc-600"
+        accentBg="bg-slate-700/50"
+        accentText="text-slate-400"
       />
       <KpiCard
-        title="High Risk"
+        title={t.kpi.highRisk}
         value={formatPct(totalPct(data.risk_counts.HIGH))}
-        sub={`${formatNumber(data.risk_counts.HIGH)} objects`}
+        sub={`${formatNumber(data.risk_counts.HIGH)} ${t.kpi.objectsSub}`}
         icon={AlertTriangle}
-        accent="bg-red-50 text-red-600"
+        accentBg="bg-red-500/10"
+        accentText="text-red-400"
       />
       <KpiCard
-        title="Low Risk"
+        title={t.kpi.lowRisk}
         value={formatPct(totalPct(data.risk_counts.LOW))}
-        sub={`${formatNumber(data.risk_counts.LOW)} objects`}
+        sub={`${formatNumber(data.risk_counts.LOW)} ${t.kpi.objectsSub}`}
         icon={ShieldCheck}
-        accent="bg-emerald-50 text-emerald-600"
+        accentBg="bg-emerald-500/10"
+        accentText="text-emerald-400"
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { AppShell } from "@/components/layout/AppShell";
 import { SWRProvider } from "@/components/providers";
 
 export const metadata: Metadata = {
@@ -15,12 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full bg-zinc-50 antialiased">
+      <body className="h-full bg-slate-950 antialiased">
         <SWRProvider>
-          <Sidebar />
-          <main className="ml-56 min-h-screen p-8">
+          <AppShell>
             {children}
-          </main>
+          </AppShell>
         </SWRProvider>
       </body>
     </html>
