@@ -70,7 +70,7 @@ export function ObjectsTable() {
             placeholder={o.searchPlaceholder}
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            className="h-9 rounded-xl border border-slate-700 bg-slate-800 pl-9 pr-8 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50"
+            className="h-9 rounded-xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.6)] pl-9 pr-8 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/25 focus:border-cyan-500/40 backdrop-blur-sm"
           />
           {search && (
             <button onClick={() => handleSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2">
@@ -79,7 +79,7 @@ export function ObjectsTable() {
           )}
         </div>
 
-        <div className="flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-800 p-1">
+        <div className="flex items-center gap-1 rounded-xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.6)] p-1 backdrop-blur-sm">
           {RISK_FILTERS.map((f) => (
             <button
               key={f.value}
@@ -104,9 +104,9 @@ export function ObjectsTable() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900 shadow-lg shadow-black/20">
+      <div className="overflow-hidden rounded-2xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.78)] shadow-[0_4px_28px_rgba(0,0,0,0.45)] backdrop-blur-[18px]">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-800 bg-slate-800/50">
+          <thead className="border-b border-[rgba(34,211,238,0.08)] bg-[rgba(7,14,36,0.5)]">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                 {o.cols.norad}
@@ -130,7 +130,7 @@ export function ObjectsTable() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800">
+          <tbody className="divide-y divide-[rgba(34,211,238,0.05)]">
             {isLoading
               ? [...Array(10)].map((_, i) => (
                   <tr key={i}>
@@ -145,7 +145,7 @@ export function ObjectsTable() {
                   <tr
                     key={obj.norad_cat_id}
                     onClick={() => router.push(`/objects/${obj.norad_cat_id}`)}
-                    className="cursor-pointer transition-colors hover:bg-slate-800/60"
+                    className="cursor-pointer transition-colors hover:bg-[rgba(34,211,238,0.04)]"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-slate-400">{obj.norad_cat_id}</td>
                     <td className="px-4 py-3 text-slate-300">{obj.object_type}</td>
@@ -170,14 +170,14 @@ export function ObjectsTable() {
             <button
               disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded-lg border border-[rgba(34,211,238,0.12)] bg-[rgba(7,14,36,0.5)] px-3 py-1.5 text-xs font-medium text-slate-400 hover:border-[rgba(34,211,238,0.25)] hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               {o.prev}
             </button>
             <button
               disabled={page === data.pages}
               onClick={() => setPage((p) => p + 1)}
-              className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded-lg border border-[rgba(34,211,238,0.12)] bg-[rgba(7,14,36,0.5)] px-3 py-1.5 text-xs font-medium text-slate-400 hover:border-[rgba(34,211,238,0.25)] hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               {o.next}
             </button>

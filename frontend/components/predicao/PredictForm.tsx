@@ -75,7 +75,7 @@ function Field({
         max={max}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-        className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-colors"
+        className="w-full rounded-lg border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.6)] px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/25 focus:border-cyan-500/40 transition-colors"
       />
       <p className="text-[10px] text-slate-500 leading-snug">{desc}</p>
     </div>
@@ -152,7 +152,7 @@ export function PredictForm() {
               />
             ))}
 
-            <div className="pt-2 border-t border-slate-800">
+            <div className="pt-2 border-t border-[rgba(34,211,238,0.08)]">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
                 {p.objectTypeSection}
               </p>
@@ -170,7 +170,7 @@ export function PredictForm() {
                         is_uncontrolled: code >= 1 ? 1 : 0,
                       }));
                     }}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 transition-colors"
+                    className="w-full rounded-lg border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.6)] px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/25 focus:border-cyan-500/40 transition-colors"
                   >
                     {p.typeOptions.map((opt, i) => (
                       <option key={i} value={i}>{opt}</option>
@@ -179,13 +179,13 @@ export function PredictForm() {
                   <p className="text-[10px] text-slate-500">{p.typeAutoNote}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.5)] px-3 py-2">
                     <div className={`h-2.5 w-2.5 rounded-full ${form.is_debris ? "bg-red-400" : "bg-slate-600"}`} />
                     <span className="text-xs text-slate-400">
                       {p.isDebris}: {form.is_debris ? p.yes : p.no}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.5)] px-3 py-2">
                     <div className={`h-2.5 w-2.5 rounded-full ${form.is_uncontrolled ? "bg-amber-400" : "bg-slate-600"}`} />
                     <span className="text-xs text-slate-400">
                       {p.isUncontrolled}: {form.is_uncontrolled ? p.yes : p.no}
@@ -247,13 +247,13 @@ export function PredictForm() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
+                  <div className="rounded-xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.5)] p-4">
                     <p className="text-xs text-slate-300 leading-relaxed">
                       {p.riskDesc[result.risk_category]}
                     </p>
                   </div>
 
-                  <div className="space-y-1 pt-2 border-t border-slate-800">
+                  <div className="space-y-1 pt-2 border-t border-[rgba(34,211,238,0.08)]">
                     <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide">{p.reference}</p>
                     <div className="flex justify-between text-xs">
                       <span className="text-emerald-400">● {p.riskLabel.LOW}</span>

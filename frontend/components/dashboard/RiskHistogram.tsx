@@ -1,16 +1,11 @@
 "use client";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Cell,
+  Bar, BarChart, CartesianGrid, ResponsiveContainer,
+  Tooltip, XAxis, YAxis, Cell,
 } from "recharts";
 import { useSummary } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CHART_TOOLTIP, CHART_GRID_STROKE, CHART_AXIS_TICK } from "@/lib/chart-styles";
 
 function riskColor(binStart: number): string {
   if (binStart >= 1.0) return "#ef4444";
@@ -34,32 +29,30 @@ export function RiskHistogram() {
   return (
     <ResponsiveContainer width="100%" height={220}>
       <BarChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} vertical={false} />
         <XAxis
           dataKey="name"
-          tick={{ fontSize: 10, fill: "#64748b" }}
+          tick={CHART_AXIS_TICK}
           tickLine={false}
           axisLine={false}
           interval={9}
-          label={{ value: "CPS_log", position: "insideBottom", offset: -2, fontSize: 11, fill: "#64748b" }}
+          label={{ value: "CPS_log", position: "insideBottom", offset: -2, fontSize: 11, fill: "#475569" }}
         />
         <YAxis
-          tick={{ fontSize: 10, fill: "#64748b" }}
+          tick={CHART_AXIS_TICK}
           tickLine={false}
           axisLine={false}
           width={40}
         />
         <Tooltip
-          cursor={{ fill: "#1e293b" }}
-          contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #334155", background: "#0f172a", color: "#e2e8f0" }}
-          labelStyle={{ color: "#94a3b8" }}
-          itemStyle={{ color: "#e2e8f0" }}
+          cursor={{ fill: "rgba(34, 211, 238, 0.04)" }}
+          {...CHART_TOOLTIP}
           formatter={(v) => [Number(v).toLocaleString(), "Objects"] as [string, string]}
           labelFormatter={(l) => `CPS_log ≈ ${l}`}
         />
         <Bar dataKey="count" radius={[3, 3, 0, 0]} maxBarSize={20}>
           {chartData.map((entry, i) => (
-            <Cell key={i} fill={riskColor(entry.binStart)} fillOpacity={0.85} />
+            <Cell key={i} fill={riskColor(entry.binStart)} fillOpacity={0.88} />
           ))}
         </Bar>
       </BarChart>

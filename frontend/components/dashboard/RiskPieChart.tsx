@@ -1,15 +1,9 @@
 "use client";
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useSummary } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatNumber } from "@/lib/utils";
+import { CHART_TOOLTIP } from "@/lib/chart-styles";
 
 const COLORS: Record<string, string> = {
   HIGH:   "#ef4444",
@@ -31,9 +25,9 @@ export function RiskPieChart() {
   }
 
   const chartData = [
-    { name: "HIGH",   value: data.risk_counts.HIGH },
+    { name: "HIGH",   value: data.risk_counts.HIGH   },
     { name: "MEDIUM", value: data.risk_counts.MEDIUM },
-    { name: "LOW",    value: data.risk_counts.LOW },
+    { name: "LOW",    value: data.risk_counts.LOW    },
   ];
 
   return (
@@ -47,22 +41,26 @@ export function RiskPieChart() {
           outerRadius={85}
           paddingAngle={3}
           dataKey="value"
+          strokeWidth={0}
         >
           {chartData.map((entry) => (
-            <Cell key={entry.name} fill={COLORS[entry.name]} />
+            <Cell key={entry.name} fill={COLORS[entry.name]} fillOpacity={0.88} />
           ))}
         </Pie>
         <Tooltip
-          contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #334155", background: "#0f172a", color: "#e2e8f0" }}
-          labelStyle={{ color: "#94a3b8" }}
-          itemStyle={{ color: "#e2e8f0" }}
-          formatter={(v, name) => [formatNumber(Number(v)), LABELS[String(name)] ?? String(name)] as [string, string]}
+          {...CHART_TOOLTIP}
+          formatter={(v, name) => [
+            formatNumber(Number(v)),
+            LABELS[String(name)] ?? String(name),
+          ] as [string, string]}
         />
         <Legend
           iconType="circle"
           iconSize={8}
           formatter={(value) => (
-            <span style={{ fontSize: 12, color: "#94a3b8" }}>{LABELS[value] ?? value}</span>
+            <span style={{ fontSize: 12, color: "#94a3b8" }}>
+              {LABELS[value] ?? value}
+            </span>
           )}
         />
       </PieChart>

@@ -20,6 +20,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { CHART_TOOLTIP, CHART_GRID_STROKE, CHART_AXIS_TICK } from "@/lib/chart-styles";
 
 const FEATURE_KEYS = [
   "altitude_km", "inclination_deg", "eccentricity", "velocity_km_s", "period_min",
@@ -29,7 +30,7 @@ const FEATURE_KEYS = [
 
 function FeatureRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-800 py-2.5 last:border-0">
+    <div className="flex items-center justify-between border-b border-[rgba(34,211,238,0.06)] py-2.5 last:border-0">
       <span className="text-sm text-slate-400">{label}</span>
       <span className="font-mono text-sm text-slate-200">{value}</span>
     </div>
@@ -146,10 +147,10 @@ export default function ObjectDetailPage({
                   data={[...importances].reverse()}
                   margin={{ top: 0, right: 16, bottom: 0, left: 140 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} horizontal={false} />
                   <XAxis
                     type="number"
-                    tick={{ fontSize: 10, fill: "#64748b" }}
+                    tick={CHART_AXIS_TICK}
                     tickLine={false}
                     axisLine={false}
                   />
@@ -163,9 +164,7 @@ export default function ObjectDetailPage({
                     width={138}
                   />
                   <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #334155", background: "#0f172a", color: "#e2e8f0" }}
-                    labelStyle={{ color: "#94a3b8" }}
-                    itemStyle={{ color: "#e2e8f0" }}
+                    {...CHART_TOOLTIP}
                     formatter={(v) => [`${(Number(v) * 100).toFixed(2)}%`, od.importancePct] as [string, string]}
                     labelFormatter={(l) => featureLabel(String(l))}
                   />
