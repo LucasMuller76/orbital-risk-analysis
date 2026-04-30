@@ -29,10 +29,12 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         return response
 
-# Resolve paths relative to this file so the server can be started from any CWD
+# Resolve paths relative to this file so the server can be started from any CWD.
+# MODEL_PATH and DATA_PATH env vars override the computed defaults — use them in
+# container deployments where the repo root is mounted at a different location.
 _HERE = Path(__file__).resolve().parent.parent  # backend/
-_MODEL_PATH = _HERE.parent / "models" / "best_model.joblib"
-_DATA_PATH = _HERE.parent / "data" / "processed" / "processed_features.parquet"
+_MODEL_PATH = Path(os.getenv("MODEL_PATH") or str(_HERE.parent / "models" / "best_model.joblib"))
+_DATA_PATH = Path(os.getenv("DATA_PATH") or str(_HERE.parent / "data" / "processed" / "processed_features.parquet"))
 
 
 @asynccontextmanager
