@@ -56,7 +56,7 @@ def list_objects(
         if search.isdigit():
             df = df[df["NORAD_CAT_ID"] == int(search)]
         else:
-            df = df[df["OBJECT_TYPE"].str.contains(search, case=False, na=False)]
+            df = df[df["OBJECT_TYPE"].str.contains(search, case=False, na=False, regex=False)]
 
     # Sort
     valid_sort_cols = {
