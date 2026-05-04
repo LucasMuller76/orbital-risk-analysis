@@ -4,7 +4,7 @@ import { getObject, getObjects } from "@/lib/api";
 import type { GetObjectsParams } from "@/lib/types";
 
 export function useObjects(params: GetObjectsParams = {}) {
-  const key = ["objects", JSON.stringify(params)];
+  const key = "objects:" + JSON.stringify(params);
   return useSWR(key, () => getObjects(params), { revalidateOnFocus: false });
 }
 

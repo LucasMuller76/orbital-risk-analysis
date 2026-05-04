@@ -9,6 +9,7 @@ export function SWRProvider({ children }: { children: React.ReactNode }) {
         value={{
           revalidateOnFocus: false,
           dedupingInterval: 30_000,
+          shouldRetryOnError: false,
           onError: (error) => {
             console.error("[SWR]", error?.message ?? error);
           },
