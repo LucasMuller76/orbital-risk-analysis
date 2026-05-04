@@ -220,3 +220,4 @@ data/raw/
 
 # Outputs gerados
 outputs/
+.vercel

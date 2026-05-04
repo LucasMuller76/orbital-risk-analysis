@@ -2,6 +2,7 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useSummary } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
 import { formatNumber } from "@/lib/utils";
 import { CHART_TOOLTIP } from "@/lib/chart-styles";
 
@@ -18,8 +19,9 @@ const LABELS: Record<string, string> = {
 };
 
 export function RiskPieChart() {
-  const { data, isLoading } = useSummary();
+  const { data, isLoading, error, mutate } = useSummary();
 
+  if (error) return <ApiError onRetry={() => mutate()} className="h-56 w-full" />;
   if (isLoading || !data) {
     return <Skeleton className="h-56 w-full" />;
   }

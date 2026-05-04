@@ -5,6 +5,7 @@ import {
 } from "recharts";
 import { useByAltitude } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
 import { CHART_TOOLTIP, CHART_GRID_STROKE, CHART_AXIS_TICK } from "@/lib/chart-styles";
 
 function cpsColor(v: number): string {
@@ -14,8 +15,9 @@ function cpsColor(v: number): string {
 }
 
 export function AltitudeBarChart() {
-  const { data, isLoading } = useByAltitude();
+  const { data, isLoading, error, mutate } = useByAltitude();
 
+  if (error) return <ApiError onRetry={() => mutate()} className="h-64 w-full" />;
   if (isLoading || !data) {
     return <Skeleton className="h-64 w-full" />;
   }

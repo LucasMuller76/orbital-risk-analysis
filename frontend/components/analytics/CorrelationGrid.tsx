@@ -1,6 +1,7 @@
 "use client";
 import { useCorrelations } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
 import { featureLabel } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
 
@@ -13,9 +14,10 @@ function corrColor(r: number): string {
 }
 
 export function CorrelationGrid() {
-  const { data, isLoading } = useCorrelations();
+  const { data, isLoading, error, mutate } = useCorrelations();
   const { t } = useLanguage();
 
+  if (error) return <ApiError onRetry={() => mutate()} className="h-64 w-full" />;
   if (isLoading || !data) return <Skeleton className="h-64 w-full" />;
 
   return (

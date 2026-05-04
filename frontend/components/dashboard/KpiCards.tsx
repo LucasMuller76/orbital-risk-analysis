@@ -6,6 +6,7 @@ import { useSummary } from "@/hooks/useAnalytics";
 import { formatCPS, formatNumber, formatPct } from "@/lib/utils";
 import { Globe, AlertTriangle, ShieldCheck, Activity } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
+import { ApiError } from "@/components/ui/api-error";
 
 interface KpiCardProps {
   title: string;
@@ -76,9 +77,10 @@ const itemVariants = {
 };
 
 export function KpiCards() {
-  const { data, isLoading } = useSummary();
+  const { data, isLoading, error, mutate } = useSummary();
   const { t } = useLanguage();
 
+  if (error) return <ApiError onRetry={() => mutate()} className="h-32" />;
   if (isLoading || !data) {
     return (
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

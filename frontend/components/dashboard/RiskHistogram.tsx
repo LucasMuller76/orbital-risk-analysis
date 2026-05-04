@@ -5,6 +5,7 @@ import {
 } from "recharts";
 import { useSummary } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
 import { CHART_TOOLTIP, CHART_GRID_STROKE, CHART_AXIS_TICK } from "@/lib/chart-styles";
 
 function riskColor(binStart: number): string {
@@ -14,8 +15,9 @@ function riskColor(binStart: number): string {
 }
 
 export function RiskHistogram() {
-  const { data, isLoading } = useSummary();
+  const { data, isLoading, error, mutate } = useSummary();
 
+  if (error) return <ApiError onRetry={() => mutate()} className="h-56 w-full" />;
   if (isLoading || !data) {
     return <Skeleton className="h-56 w-full" />;
   }

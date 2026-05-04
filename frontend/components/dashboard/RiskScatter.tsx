@@ -5,13 +5,15 @@ import {
 } from "recharts";
 import { useScatter } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
 import { riskHex } from "@/lib/utils";
 import { CHART_TOOLTIP, CHART_GRID_STROKE, CHART_AXIS_TICK } from "@/lib/chart-styles";
 import type { RiskCategory } from "@/lib/types";
 
 export function RiskScatter() {
-  const { data, isLoading } = useScatter();
+  const { data, isLoading, error, mutate } = useScatter();
 
+  if (error) return <ApiError onRetry={() => mutate()} className="h-64 w-full" />;
   if (isLoading || !data) {
     return <Skeleton className="h-64 w-full" />;
   }

@@ -5,13 +5,15 @@ import {
 } from "recharts";
 import { useByType } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
 import { CHART_TOOLTIP, CHART_GRID_STROKE, CHART_AXIS_TICK } from "@/lib/chart-styles";
 
 const PALETTE = ["#22d3ee", "#818cf8", "#f59e0b", "#10b981", "#ef4444"];
 
 export function ObjectTypeChart() {
-  const { data, isLoading } = useByType();
+  const { data, isLoading, error, mutate } = useByType();
 
+  if (error) return <ApiError onRetry={() => mutate()} className="h-56 w-full" />;
   if (isLoading || !data) return <Skeleton className="h-56 w-full" />;
 
   return (

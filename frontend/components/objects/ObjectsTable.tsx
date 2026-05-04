@@ -5,6 +5,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 import { useObjects } from "@/hooks/useObjects";
 import { RiskBadge } from "./RiskBadge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
 import { cn, formatAltitude, formatCPS, formatNumber } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
 import type { RiskCategory } from "@/lib/types";
@@ -30,7 +31,7 @@ export function ObjectsTable() {
   const [sort, setSort] = useState<SortKey>("predicted_CPS_log");
   const [order, setOrder] = useState<SortOrder>("desc");
 
-  const { data, isLoading } = useObjects({ page, limit: 50, risk, search: search || undefined, sort, order });
+  const { data, isLoading, error, mutate } = useObjects({ page, limit: 50, risk, search: search || undefined, sort, order });
 
   const handleSort = useCallback((col: SortKey) => {
     if (col === sort) {
@@ -104,64 +105,68 @@ export function ObjectsTable() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.78)] shadow-[0_4px_28px_rgba(0,0,0,0.45)] backdrop-blur-[18px]">
-        <table className="w-full text-sm">
-          <thead className="border-b border-[rgba(34,211,238,0.08)] bg-[rgba(7,14,36,0.5)]">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                {o.cols.norad}
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                {o.cols.type}
-              </th>
-              {COLS.map((c) => (
-                <th key={c.key} className="px-4 py-3 text-left">
-                  <button
-                    onClick={() => handleSort(c.key)}
-                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
-                  >
-                    {c.label}
-                    <SortIcon active={sort === c.key} order={order} />
-                  </button>
+      {error ? (
+        <ApiError onRetry={() => mutate()} className="h-64" />
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.78)] shadow-[0_4px_28px_rgba(0,0,0,0.45)] backdrop-blur-[18px]">
+          <table className="w-full text-sm">
+            <thead className="border-b border-[rgba(34,211,238,0.08)] bg-[rgba(7,14,36,0.5)]">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                  {o.cols.norad}
                 </th>
-              ))}
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                {o.cols.risk}
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[rgba(34,211,238,0.05)]">
-            {isLoading
-              ? [...Array(10)].map((_, i) => (
-                  <tr key={i}>
-                    {[...Array(7)].map((_, j) => (
-                      <td key={j} className="px-4 py-3">
-                        <Skeleton className="h-4 w-full" />
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              : data?.items.map((obj) => (
-                  <tr
-                    key={obj.norad_cat_id}
-                    onClick={() => router.push(`/objects/${obj.norad_cat_id}`)}
-                    className="cursor-pointer transition-colors hover:bg-[rgba(34,211,238,0.04)]"
-                  >
-                    <td className="px-4 py-3 font-mono text-xs text-slate-400">{obj.norad_cat_id}</td>
-                    <td className="px-4 py-3 text-slate-300">{obj.object_type}</td>
-                    <td className="px-4 py-3 text-slate-300">{formatAltitude(obj.altitude_km)}</td>
-                    <td className="px-4 py-3 text-slate-300">{obj.inclination_deg.toFixed(2)}°</td>
-                    <td className="px-4 py-3 text-slate-300">{obj.velocity_km_s.toFixed(3)} km/s</td>
-                    <td className="px-4 py-3 font-mono text-slate-100 font-semibold">{formatCPS(obj.predicted_CPS_log)}</td>
-                    <td className="px-4 py-3"><RiskBadge category={obj.risk_category} size="sm" /></td>
-                  </tr>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                  {o.cols.type}
+                </th>
+                {COLS.map((c) => (
+                  <th key={c.key} className="px-4 py-3 text-left">
+                    <button
+                      onClick={() => handleSort(c.key)}
+                      className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
+                    >
+                      {c.label}
+                      <SortIcon active={sort === c.key} order={order} />
+                    </button>
+                  </th>
                 ))}
-          </tbody>
-        </table>
-      </div>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                  {o.cols.risk}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[rgba(34,211,238,0.05)]">
+              {isLoading
+                ? [...Array(10)].map((_, i) => (
+                    <tr key={i}>
+                      {[...Array(7)].map((_, j) => (
+                        <td key={j} className="px-4 py-3">
+                          <Skeleton className="h-4 w-full" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                : data?.items.map((obj) => (
+                    <tr
+                      key={obj.norad_cat_id}
+                      onClick={() => router.push(`/objects/${obj.norad_cat_id}`)}
+                      className="cursor-pointer transition-colors hover:bg-[rgba(34,211,238,0.04)]"
+                    >
+                      <td className="px-4 py-3 font-mono text-xs text-slate-400">{obj.norad_cat_id}</td>
+                      <td className="px-4 py-3 text-slate-300">{obj.object_type}</td>
+                      <td className="px-4 py-3 text-slate-300">{formatAltitude(obj.altitude_km)}</td>
+                      <td className="px-4 py-3 text-slate-300">{obj.inclination_deg.toFixed(2)}°</td>
+                      <td className="px-4 py-3 text-slate-300">{obj.velocity_km_s.toFixed(3)} km/s</td>
+                      <td className="px-4 py-3 font-mono text-slate-100 font-semibold">{formatCPS(obj.predicted_CPS_log)}</td>
+                      <td className="px-4 py-3"><RiskBadge category={obj.risk_category} size="sm" /></td>
+                    </tr>
+                  ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Pagination */}
-      {data && data.pages > 1 && (
+      {!error && data && data.pages > 1 && (
         <div className="flex items-center justify-between text-sm">
           <span className="text-slate-500">
             {o.page} {data.page} {o.of} {data.pages}
