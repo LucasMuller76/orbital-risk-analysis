@@ -66,6 +66,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+logger.info(f"CORS origins: {_origins}")
+
 app.include_router(objects_router, prefix="/objects", tags=["Objects"])
 app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"])
 app.include_router(predict_router, tags=["Predict"])
