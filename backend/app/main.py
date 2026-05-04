@@ -54,19 +54,36 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
-_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
-
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+_raw_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000",
 )
+_origins = list({
+    o.strip().rstrip("/")
+    for o in _raw_origins.split(",")
+    if o.strip()
+})
+logger.info(f"[CORS] Allowed origins: {_origins}")
 
-logger.info(f"CORS origins: {_origins}")
+if os.getenv("CORS_DEBUG") == "true":
+    logger.warning("[CORS] DEBUG MODE — allowing all origins (disable before shipping)")
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 app.include_router(objects_router, prefix="/objects", tags=["Objects"])
 app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"])
