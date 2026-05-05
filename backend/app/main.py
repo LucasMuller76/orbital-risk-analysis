@@ -29,9 +29,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         return response
 
-# Resolve paths relative to this file so the server can be started from any CWD.
-# MODEL_PATH and DATA_PATH env vars override the computed defaults — use them in
-# container deployments where the repo root is mounted at a different location.
+
 _HERE = Path(__file__).resolve().parent.parent  # backend/
 _MODEL_PATH = Path(os.getenv("MODEL_PATH") or str(_HERE.parent / "models" / "best_model.joblib"))
 _DATA_PATH = Path(os.getenv("DATA_PATH") or str(_HERE.parent / "data" / "processed" / "processed_features.parquet"))
@@ -54,41 +52,19 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-_raw_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000",
+# allow_origins=["*"] + allow_credentials=False is the only config that works
+# universally across all browsers and origins without needing to enumerate URLs.
+# The frontend uses no cookies or auth headers, so credentials=False is correct.
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
-_origins = list({
-    o.strip().rstrip("/")
-    for o in _raw_origins.split(",")
-    if o.strip()
-})
-logger.info(f"[CORS] Allowed origins: {_origins}")
 
-# Accept any *.vercel.app subdomain so Vercel preview/deployment URLs
-# (e.g. project-abc123.vercel.app) don't need to be listed individually.
-_VERCEL_REGEX = r"https://[a-zA-Z0-9-]+\.vercel\.app"
-
-if os.getenv("CORS_DEBUG") == "true":
-    logger.warning("[CORS] DEBUG MODE — allowing all origins (disable before shipping)")
-    app.add_middleware(SecurityHeadersMiddleware)
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=False,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    app.add_middleware(SecurityHeadersMiddleware)
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=_origins,
-        allow_origin_regex=_VERCEL_REGEX,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+logger.info("[CORS] open — allow_origins=['*'], credentials=False")
 
 app.include_router(objects_router, prefix="/objects", tags=["Objects"])
 app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"])
