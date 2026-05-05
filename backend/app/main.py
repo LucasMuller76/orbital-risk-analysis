@@ -65,6 +65,10 @@ _origins = list({
 })
 logger.info(f"[CORS] Allowed origins: {_origins}")
 
+# Accept any *.vercel.app subdomain so Vercel preview/deployment URLs
+# (e.g. project-abc123.vercel.app) don't need to be listed individually.
+_VERCEL_REGEX = r"https://[a-zA-Z0-9-]+\.vercel\.app"
+
 if os.getenv("CORS_DEBUG") == "true":
     logger.warning("[CORS] DEBUG MODE — allowing all origins (disable before shipping)")
     app.add_middleware(SecurityHeadersMiddleware)
@@ -80,6 +84,7 @@ else:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_origins,
+        allow_origin_regex=_VERCEL_REGEX,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
