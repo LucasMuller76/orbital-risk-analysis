@@ -20,8 +20,7 @@ Orbital collision risk analysis system for LEO (*Low Earth Orbit*). Combines pub
 10. [How to Run](#how-to-run)
 11. [Deployment](#deployment)
 12. [Model and Domain Limitations](#model-and-domain-limitations)
-13. [Next Steps](#next-steps)
-14. [References](#references)
+13. [References](#references)
 
 ---
 
