@@ -555,29 +555,6 @@ O frontend possui um timeout de 35 segundos nas requisições para acomodar o co
 
 ---
 
-## Próximos Passos
-
-### Melhorias de modelagem
-
-- **Propagação TLE com SGP4:** usar `sgp4` ou `poliastro` para propagar órbitas e calcular encontros reais (distância mínima de aproximação, TCA).
-- **Vizinhança 3D:** substituir a densidade 1D (±50 km em altitude) por uma densidade volumétrica considerando inclinação e RAAN, para melhor aproximar o ambiente real de encontros.
-- **Monte Carlo de colisão:** estimar probabilidades de colisão absolutas via simulação, considerando elipsoides de erro dos TLEs.
-- **Modelos de crescimento:** incorporar projeções de constelações aprovadas (Starlink Gen2, OneWeb, Amazon Kuiper) nas estimativas de risco futuro.
-
-### Melhorias de dados
-
-- **Atualização automática:** pipeline de coleta periódica (diária ou semanal) via Space-Track API.
-- **Integração com LeoLabs ou ExoAnalytic:** dados de tracking de maior precisão para objetos pequenos.
-- **Histórico de conjunções reais:** usar dados do CARA (NASA) ou eventos CDM públicos para validar o CPS_log contra probabilidades de colisão reais.
-
-### Melhorias de produto
-
-- **Alertas por NORAD ID:** notificações quando o risco de um objeto específico muda de categoria.
-- **Comparação temporal:** visualizar a evolução do risco de uma faixa de altitude ao longo de meses.
-- **Modo de simulação:** inserir um objeto hipotético no dataset e ver como ele afeta a densidade local dos vizinhos.
-
----
-
 ## Referências
 
 - Kessler, D. J., & Cour-Palais, B. G. (1978). *Collision frequency of artificial satellites: The creation of a debris belt*. Journal of Geophysical Research, 83(A6), 2637–2646.
