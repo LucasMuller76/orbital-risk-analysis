@@ -61,7 +61,7 @@ app.add_middleware(
     allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "Accept"],
+    allow_headers=["*"],
 )
 
 logger.info("[CORS] allow_origins=%s", _ALLOWED_ORIGINS)
