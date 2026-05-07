@@ -1,16 +1,18 @@
 FROM python:3.12-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY backend/requirements.txt ./
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY models/ ./models/
-COPY data/processed/ ./data/processed/
-COPY backend/ ./backend/
+COPY backend/models/ ./models/
+COPY backend/data/processed/ ./data/processed/
+COPY backend/app/ ./app/
 
-WORKDIR /app/backend
+EXPOSE 8000
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

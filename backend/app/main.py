@@ -30,9 +30,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
-_HERE = Path(__file__).resolve().parent.parent  # backend/
-_MODEL_PATH = Path(os.getenv("MODEL_PATH") or str(_HERE.parent / "models" / "best_model.joblib"))
-_DATA_PATH = Path(os.getenv("DATA_PATH") or str(_HERE.parent / "data" / "processed" / "processed_features.parquet"))
+_HERE = Path(__file__).resolve().parent.parent  # backend/ (local) or /app/ (Docker)
+_MODEL_PATH = Path(os.getenv("MODEL_PATH") or str(_HERE / "models" / "best_model.joblib"))
+_DATA_PATH = Path(os.getenv("DATA_PATH") or str(_HERE / "data" / "processed" / "processed_features.parquet"))
 
 
 @asynccontextmanager
@@ -52,19 +52,19 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# allow_origins=["*"] + allow_credentials=False is the only config that works
-# universally across all browsers and origins without needing to enumerate URLs.
-# The frontend uses no cookies or auth headers, so credentials=False is correct.
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "")
+_ALLOWED_ORIGINS: list[str] = [o.strip() for o in _raw_origins.split(",") if o.strip()] or ["*"]
+
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["GET", "POST"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "Accept"],
 )
 
-logger.info("[CORS] open — allow_origins=['*'], credentials=False")
+logger.info("[CORS] allow_origins=%s", _ALLOWED_ORIGINS)
 
 app.include_router(objects_router, prefix="/objects", tags=["Objects"])
 app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"])

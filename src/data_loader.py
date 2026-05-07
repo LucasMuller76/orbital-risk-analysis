@@ -13,7 +13,7 @@ from spacetrack import SpaceTrackClient
 # Carrega as variáveis do arquivo .env
 load_dotenv()
 
-RAW_DIR = Path("data/raw")
+RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 
