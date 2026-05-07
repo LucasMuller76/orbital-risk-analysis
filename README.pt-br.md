@@ -20,8 +20,7 @@ Sistema de análise de risco de colisão orbital em LEO (*Low Earth Orbit*). Com
 10. [Como Executar](#como-executar)
 11. [Deploy](#deploy)
 12. [Limitações do Modelo e do Domínio](#limitações-do-modelo-e-do-domínio)
-13. [Próximos Passos](#próximos-passos)
-14. [Referências](#referências)
+13. [Referências](#referências)
 
 ---
 
@@ -88,31 +87,31 @@ Com base nos dados do catálogo atual:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         Fonte de Dados                       │
+│                         Fonte de Dados                      │
 │  Space-Track API (TLE / SATCAT)  ·  CelesTrak (ativos)      │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
-┌─────────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────┐
 │                    Pipeline Offline (Notebooks)              │
-│  01_eda.ipynb → 02_features.ipynb → 03_model.ipynb          │
+│  01_eda.ipynb → 02_features.ipynb → 03_model.ipynb           │
 │                                                              │
 │  data/raw/*.csv → data/processed/*.parquet + models/*.joblib │
-└──────────────────────┬──────────────────────────────────────┘
+└──────────────────────┬───────────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Backend (FastAPI / Python)                 │
-│  Carrega model.joblib + processed_features.parquet           │
-│  Serve REST API: /objects · /analytics/* · /predict          │
-│  Deploy: Railway (Dockerfile)                                │
+│                    Backend (FastAPI / Python)               │
+│  Carrega model.joblib + processed_features.parquet          │
+│  Serve REST API: /objects · /analytics/* · /predict         │
+│  Deploy: Railway (Dockerfile)                               │
 └──────────────────────┬──────────────────────────────────────┘
                        │  HTTP / JSON
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (Next.js / React)                 │
-│  Dashboard · Analytics · Objects · Predição · Glossário      │
-│  Deploy: Vercel                                              │
+│                    Frontend (Next.js / React)               │
+│  Dashboard · Analytics · Objects · Predição · Glossário     │
+│  Deploy: Vercel                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -552,29 +551,6 @@ O frontend possui um timeout de 35 segundos nas requisições para acomodar o co
 - O catálogo Space-Track cobre objetos rastreáveis por radar (~10 cm em LEO). Objetos menores — que representam a maior parte da população real de detritos — são invisíveis ao modelo.
 - Objetos classificados como UNKNOWN (~1,4% do dataset) têm suas features de tipo configuradas de forma conservadora, o que pode subestimar ou superestimar o risco real.
 - O dataset é um *snapshot* estático. A população LEO muda continuamente com novos lançamentos e decaimentos.
-
----
-
-## Próximos Passos
-
-### Melhorias de modelagem
-
-- **Propagação TLE com SGP4:** usar `sgp4` ou `poliastro` para propagar órbitas e calcular encontros reais (distância mínima de aproximação, TCA).
-- **Vizinhança 3D:** substituir a densidade 1D (±50 km em altitude) por uma densidade volumétrica considerando inclinação e RAAN, para melhor aproximar o ambiente real de encontros.
-- **Monte Carlo de colisão:** estimar probabilidades de colisão absolutas via simulação, considerando elipsoides de erro dos TLEs.
-- **Modelos de crescimento:** incorporar projeções de constelações aprovadas (Starlink Gen2, OneWeb, Amazon Kuiper) nas estimativas de risco futuro.
-
-### Melhorias de dados
-
-- **Atualização automática:** pipeline de coleta periódica (diária ou semanal) via Space-Track API.
-- **Integração com LeoLabs ou ExoAnalytic:** dados de tracking de maior precisão para objetos pequenos.
-- **Histórico de conjunções reais:** usar dados do CARA (NASA) ou eventos CDM públicos para validar o CPS_log contra probabilidades de colisão reais.
-
-### Melhorias de produto
-
-- **Alertas por NORAD ID:** notificações quando o risco de um objeto específico muda de categoria.
-- **Comparação temporal:** visualizar a evolução do risco de uma faixa de altitude ao longo de meses.
-- **Modo de simulação:** inserir um objeto hipotético no dataset e ver como ele afeta a densidade local dos vizinhos.
 
 ---
 
