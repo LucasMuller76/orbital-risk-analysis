@@ -88,31 +88,31 @@ Com base nos dados do catálogo atual:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         Fonte de Dados                       │
+│                         Fonte de Dados                      │
 │  Space-Track API (TLE / SATCAT)  ·  CelesTrak (ativos)      │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
-┌─────────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────┐
 │                    Pipeline Offline (Notebooks)              │
-│  01_eda.ipynb → 02_features.ipynb → 03_model.ipynb          │
+│  01_eda.ipynb → 02_features.ipynb → 03_model.ipynb           │
 │                                                              │
 │  data/raw/*.csv → data/processed/*.parquet + models/*.joblib │
-└──────────────────────┬──────────────────────────────────────┘
+└──────────────────────┬───────────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Backend (FastAPI / Python)                 │
-│  Carrega model.joblib + processed_features.parquet           │
-│  Serve REST API: /objects · /analytics/* · /predict          │
-│  Deploy: Railway (Dockerfile)                                │
+│                    Backend (FastAPI / Python)               │
+│  Carrega model.joblib + processed_features.parquet          │
+│  Serve REST API: /objects · /analytics/* · /predict         │
+│  Deploy: Railway (Dockerfile)                               │
 └──────────────────────┬──────────────────────────────────────┘
                        │  HTTP / JSON
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (Next.js / React)                 │
-│  Dashboard · Analytics · Objects · Predição · Glossário      │
-│  Deploy: Vercel                                              │
+│                    Frontend (Next.js / React)               │
+│  Dashboard · Analytics · Objects · Predição · Glossário     │
+│  Deploy: Vercel                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
