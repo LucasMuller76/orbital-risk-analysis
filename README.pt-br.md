@@ -20,8 +20,7 @@ Sistema de análise de risco de colisão orbital em LEO (*Low Earth Orbit*). Com
 10. [Como Executar](#como-executar)
 11. [Deploy](#deploy)
 12. [Limitações do Modelo e do Domínio](#limitações-do-modelo-e-do-domínio)
-13. [Próximos Passos](#próximos-passos)
-14. [Referências](#referências)
+13. [Referências](#referências)
 
 ---
 
