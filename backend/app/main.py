@@ -8,8 +8,8 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.datastructures import MutableHeaders
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
 from app.data_loader import load_data
 from app.model import load_model, get_model
@@ -21,26 +21,13 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(name)s  %(messa
 logger = logging.getLogger(__name__)
 
 
-class SecurityHeadersMiddleware:
-    """Pure ASGI middleware — avoids BaseHTTPMiddleware conflict with CORSMiddleware."""
-
-    def __init__(self, app: ASGIApp) -> None:
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http":
-            await self.app(scope, receive, send)
-            return
-
-        async def send_with_headers(message: dict) -> None:
-            if message["type"] == "http.response.start":
-                headers = MutableHeaders(scope=message)
-                headers.append("X-Content-Type-Options", "nosniff")
-                headers.append("X-Frame-Options", "DENY")
-                headers.append("Referrer-Policy", "strict-origin-when-cross-origin")
-            await send(message)
-
-        await self.app(scope, receive, send_with_headers)
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
 
 
 _HERE = Path(__file__).resolve().parent.parent  # backend/ (local) or /app/ (Docker)
