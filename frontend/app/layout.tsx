@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { AppShell } from "@/components/layout/AppShell";
 import { SWRProvider } from "@/components/providers";
 import { SpaceBackground } from "@/components/SpaceBackground";
 
@@ -13,7 +12,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Orbital Risk Dashboard",
+  title: "Orbital Risk Analysis",
   description: "LEO collision risk prediction — ML-powered analytics",
 };
 
@@ -27,9 +26,7 @@ export default function RootLayout({
       <body className="h-full bg-[#020617] antialiased">
         <SpaceBackground />
         <SWRProvider>
-          <AppShell>
-            {children}
-          </AppShell>
+          {children}
         </SWRProvider>
       </body>
     </html>

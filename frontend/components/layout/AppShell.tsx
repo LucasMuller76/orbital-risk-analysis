@@ -1,12 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sidebar } from "./Sidebar";
 import { cn } from "@/lib/utils";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (window.innerWidth >= 1024) setOpen(true);
+  }, []);
 
   return (
     <>
@@ -60,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
         </AnimatePresence>
 
-        <div className="p-6 lg:p-8">
+        <div className="px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-8 lg:pb-8">
           {children}
         </div>
       </main>

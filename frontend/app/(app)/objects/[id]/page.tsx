@@ -82,7 +82,7 @@ export default function ObjectDetailPage({
     <div className="space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-sm text-slate-500">
-        <Link href="/" className="hover:text-slate-300 transition-colors">{od.breadDashboard}</Link>
+        <Link href="/dashboard" className="hover:text-slate-300 transition-colors">{od.breadDashboard}</Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/objects" className="hover:text-slate-300 transition-colors">{od.breadObjects}</Link>
         <ChevronRight className="h-3.5 w-3.5" />
@@ -92,19 +92,19 @@ export default function ObjectDetailPage({
       {/* Header card */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-start justify-between">
-            <div>
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
               <p className="text-xs font-medium uppercase tracking-wide text-slate-500 mb-1">
                 NORAD {obj.norad_cat_id}
               </p>
-              <h1 className="text-2xl font-bold text-slate-100">{obj.object_type}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-100">{obj.object_type}</h1>
               <p className="mt-1 text-sm text-slate-400">
                 {od.altitudeBand}: <span className="font-medium text-slate-300">{obj.altitude_band} km</span>
               </p>
             </div>
-            <div className="text-right">
+            <div className="text-right shrink-0">
               <p className="text-xs text-slate-500 mb-1.5">{od.predictedCps}</p>
-              <p className="text-4xl font-bold" style={{ color: riskHex(riskCat) }}>
+              <p className="text-3xl sm:text-4xl font-bold" style={{ color: riskHex(riskCat) }}>
                 {formatCPS(obj.predicted_CPS_log)}
               </p>
               <div className="mt-2">

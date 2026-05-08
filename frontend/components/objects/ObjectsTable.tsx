@@ -53,13 +53,6 @@ export function ObjectsTable() {
     { label: o.filters.low,    value: "LOW" },
   ];
 
-  const COLS: Array<{ key: SortKey; label: string }> = [
-    { key: "altitude_km",       label: o.cols.altitude },
-    { key: "inclination_deg",   label: o.cols.inclination },
-    { key: "velocity_km_s",     label: o.cols.velocity },
-    { key: "predicted_CPS_log", label: o.cols.cps },
-  ];
-
   return (
     <div className="space-y-4">
       {/* Filters */}
@@ -108,8 +101,8 @@ export function ObjectsTable() {
       {error ? (
         <ApiError onRetry={() => mutate()} className="h-64" />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.78)] shadow-[0_4px_28px_rgba(0,0,0,0.45)] backdrop-blur-[18px]">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-[rgba(34,211,238,0.1)] bg-[rgba(7,14,36,0.78)] shadow-[0_4px_28px_rgba(0,0,0,0.45)] backdrop-blur-[18px]">
+          <table className="w-full min-w-[560px] text-sm">
             <thead className="border-b border-[rgba(34,211,238,0.08)] bg-[rgba(7,14,36,0.5)]">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -118,17 +111,42 @@ export function ObjectsTable() {
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                   {o.cols.type}
                 </th>
-                {COLS.map((c) => (
-                  <th key={c.key} className="px-4 py-3 text-left">
-                    <button
-                      onClick={() => handleSort(c.key)}
-                      className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
-                    >
-                      {c.label}
-                      <SortIcon active={sort === c.key} order={order} />
-                    </button>
-                  </th>
-                ))}
+                <th className="px-4 py-3 text-left">
+                  <button
+                    onClick={() => handleSort("altitude_km")}
+                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
+                  >
+                    {o.cols.altitude}
+                    <SortIcon active={sort === "altitude_km"} order={order} />
+                  </button>
+                </th>
+                <th className="hidden sm:table-cell px-4 py-3 text-left">
+                  <button
+                    onClick={() => handleSort("inclination_deg")}
+                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
+                  >
+                    {o.cols.inclination}
+                    <SortIcon active={sort === "inclination_deg"} order={order} />
+                  </button>
+                </th>
+                <th className="hidden sm:table-cell px-4 py-3 text-left">
+                  <button
+                    onClick={() => handleSort("velocity_km_s")}
+                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
+                  >
+                    {o.cols.velocity}
+                    <SortIcon active={sort === "velocity_km_s"} order={order} />
+                  </button>
+                </th>
+                <th className="px-4 py-3 text-left">
+                  <button
+                    onClick={() => handleSort("predicted_CPS_log")}
+                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
+                  >
+                    {o.cols.cps}
+                    <SortIcon active={sort === "predicted_CPS_log"} order={order} />
+                  </button>
+                </th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                   {o.cols.risk}
                 </th>
@@ -154,8 +172,8 @@ export function ObjectsTable() {
                       <td className="px-4 py-3 font-mono text-xs text-slate-400">{obj.norad_cat_id}</td>
                       <td className="px-4 py-3 text-slate-300">{obj.object_type}</td>
                       <td className="px-4 py-3 text-slate-300">{formatAltitude(obj.altitude_km)}</td>
-                      <td className="px-4 py-3 text-slate-300">{obj.inclination_deg.toFixed(2)}°</td>
-                      <td className="px-4 py-3 text-slate-300">{obj.velocity_km_s.toFixed(3)} km/s</td>
+                      <td className="hidden sm:table-cell px-4 py-3 text-slate-300">{obj.inclination_deg.toFixed(2)}°</td>
+                      <td className="hidden sm:table-cell px-4 py-3 text-slate-300">{obj.velocity_km_s.toFixed(3)} km/s</td>
                       <td className="px-4 py-3 font-mono text-slate-100 font-semibold">{formatCPS(obj.predicted_CPS_log)}</td>
                       <td className="px-4 py-3"><RiskBadge category={obj.risk_category} size="sm" /></td>
                     </tr>

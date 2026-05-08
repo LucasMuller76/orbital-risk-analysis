@@ -24,7 +24,7 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
   const { lang, setLang, t } = useLanguage();
 
   const NAV = [
-    { href: "/",          label: t.nav.dashboard, Icon: LayoutDashboard },
+    { href: "/dashboard", label: t.nav.dashboard, Icon: LayoutDashboard },
     { href: "/objects",   label: t.nav.objects,   Icon: Table2          },
     { href: "/analytics", label: t.nav.analytics, Icon: BarChart3       },
     { href: "/predicao",  label: t.nav.predict,   Icon: BrainCircuit    },
@@ -80,11 +80,12 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
       {/* ── Navigation ── */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
         {NAV.map(({ href, label, Icon }, index) => {
-          const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+          const active = pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
+              onClick={() => { if (typeof window !== "undefined" && window.innerWidth < 1024) onToggle(); }}
               className={cn(
                 "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium",
                 "transition-all duration-200",

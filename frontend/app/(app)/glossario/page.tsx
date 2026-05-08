@@ -4,8 +4,6 @@ import { TopBar } from "@/components/layout/TopBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Satellite, Activity, BarChart3, BrainCircuit, AlertTriangle, ShieldCheck, Info } from "lucide-react";
 
-/* ─── Content data ──────────────────────────────────────────────────────────── */
-
 const CONTENT = {
   en: {
     navLabel: "Navigate by section",
@@ -220,8 +218,6 @@ const CONTENT = {
   },
 } as const;
 
-/* ─── Sub-components ────────────────────────────────────────────────────────── */
-
 function Section({ id, icon: Icon, title, children }: {
   id: string;
   icon: React.ElementType;
@@ -266,8 +262,6 @@ function RiskCard({ level, color, threshold, desc, bg, border, icon: Icon }: {
   );
 }
 
-/* ─── Page ──────────────────────────────────────────────────────────────────── */
-
 export default function GlossarioPage() {
   const { lang, t } = useLanguage();
   const c = CONTENT[lang];
@@ -276,7 +270,6 @@ export default function GlossarioPage() {
     <div className="space-y-10 max-w-4xl mx-auto">
       <TopBar title={t.glossary.title} subtitle={t.glossary.subtitle} />
 
-      {/* Quick nav */}
       <Card>
         <CardContent className="pt-5 pb-5">
           <p className="text-xs text-slate-500 uppercase tracking-wide font-medium mb-3">{c.navLabel}</p>
@@ -294,7 +287,6 @@ export default function GlossarioPage() {
         </CardContent>
       </Card>
 
-      {/* Project */}
       <Section id="projeto" icon={c.project.icon} title={c.project.title}>
         <Card>
           <CardContent className="pt-5">
@@ -311,7 +303,6 @@ export default function GlossarioPage() {
         </Card>
       </Section>
 
-      {/* CPS */}
       <Section id="cps" icon={c.cps.icon} title={c.cps.title}>
         <Card>
           <CardContent className="pt-5 space-y-4">
@@ -326,14 +317,12 @@ export default function GlossarioPage() {
         </Card>
       </Section>
 
-      {/* Risk categories */}
       <Section id="risco" icon={c.risk.icon} title={c.risk.title}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {c.risk.cards.map((card) => <RiskCard key={card.level} {...card} />)}
         </div>
       </Section>
 
-      {/* Orbital parameters */}
       <Section id="orbital" icon={c.orbital.icon} title={c.orbital.title}>
         <Card>
           <CardContent className="pt-5">
@@ -342,7 +331,6 @@ export default function GlossarioPage() {
         </Card>
       </Section>
 
-      {/* Local environment */}
       <Section id="local" icon={c.local.icon} title={c.local.title}>
         <Card>
           <CardContent className="pt-5">
@@ -352,7 +340,6 @@ export default function GlossarioPage() {
         </Card>
       </Section>
 
-      {/* Object types */}
       <Section id="tipos" icon={c.types.icon} title={c.types.title}>
         <Card>
           <CardContent className="pt-5">
@@ -361,7 +348,6 @@ export default function GlossarioPage() {
         </Card>
       </Section>
 
-      {/* General terms */}
       <Section id="gerais" icon={c.general.icon} title={c.general.title}>
         <Card>
           <CardContent className="pt-5">
@@ -370,7 +356,6 @@ export default function GlossarioPage() {
         </Card>
       </Section>
 
-      {/* Prediction tool */}
       <Section id="previsao" icon={c.predict.icon} title={c.predict.title}>
         <Card>
           <CardContent className="pt-5 space-y-4">
