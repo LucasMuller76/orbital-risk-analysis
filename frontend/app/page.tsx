@@ -69,11 +69,18 @@ function OrbitalSystem() {
 }
 
 /* ── Feature cards data ──────────────────────────────────────── */
-const FEATURES = [
+const FEATURES: Array<{
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+  color: string;
+  href: string;
+  beta?: boolean;
+}> = [
   { icon: LayoutDashboard, title: "Dashboard", desc: "KPIs, risk histograms, altitude scatter — full collision overview at a glance.", color: "#22d3ee", href: "/dashboard" },
   { icon: Table2, title: "Objects", desc: "Browse all 27,994 LEO objects. Filter by risk, search by NORAD ID, sort by any column.", color: "#6366f1", href: "/objects" },
   { icon: BarChart3, title: "Analytics", desc: "Correlation heatmaps, altitude band risk charts, object type distributions.", color: "#f59e0b", href: "/analytics" },
-  { icon: BrainCircuit, title: "Prediction", desc: "Enter orbital parameters and get live CPS_log prediction from the trained ML model.", color: "#10b981", href: "/predicao" },
+  { icon: BrainCircuit, title: "Prediction", desc: "Enter orbital parameters and get live CPS_log prediction from the trained ML model.", color: "#10b981", href: "/predicao", beta: true },
 ];
 
 /* ── Pipeline steps data ─────────────────────────────────────── */
@@ -405,9 +412,22 @@ export default function LandingPage() {
                     el.style.boxShadow = "none";
                   }}
                 >
-                  <div className="mb-4 h-10 w-10 flex items-center justify-center rounded-xl"
-                    style={{ background: `${feat.color}12`, border: `1px solid ${feat.color}22` }}>
-                    <feat.icon className="h-5 w-5" style={{ color: feat.color }} />
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="h-10 w-10 flex items-center justify-center rounded-xl"
+                      style={{ background: `${feat.color}12`, border: `1px solid ${feat.color}22` }}>
+                      <feat.icon className="h-5 w-5" style={{ color: feat.color }} />
+                    </div>
+                    {feat.beta && (
+                      <span className="text-[9px] font-bold tracking-widest px-2 py-0.5 rounded-full"
+                        style={{
+                          background: "rgba(245,158,11,0.12)",
+                          border: "1px solid rgba(245,158,11,0.25)",
+                          color: "#f59e0b",
+                          fontFamily: "var(--font-ibm-mono)",
+                        }}>
+                        BETA
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-xs font-black text-white mb-2 tracking-widest"
                     style={{ fontFamily: "var(--font-orbitron)" }}>

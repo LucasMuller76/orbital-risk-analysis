@@ -38,7 +38,7 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
     { href: "/dashboard", label: t.nav.dashboard, Icon: LayoutDashboard },
     { href: "/objects",   label: t.nav.objects,   Icon: Table2          },
     { href: "/analytics", label: t.nav.analytics, Icon: BarChart3       },
-    { href: "/predicao",  label: t.nav.predict,   Icon: BrainCircuit    },
+    { href: "/predicao",  label: t.nav.predict,   Icon: BrainCircuit, beta: true },
     { href: "/glossario", label: t.nav.glossary,  Icon: BookOpen        },
   ];
 
@@ -93,7 +93,7 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
         initial="hidden"
         animate={open ? "visible" : "hidden"}
       >
-        {NAV.map(({ href, label, Icon }) => {
+        {NAV.map(({ href, label, Icon, beta }) => {
           const active = pathname.startsWith(href);
           return (
             <motion.div key={href} variants={navItemVariants} className="relative">
@@ -125,6 +125,16 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
                 />
                 <span className="truncate">{label}</span>
 
+                {beta && !active && (
+                  <span className="ml-auto shrink-0 text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded-full"
+                    style={{
+                      background: "rgba(245,158,11,0.1)",
+                      border: "1px solid rgba(245,158,11,0.22)",
+                      color: "#f59e0b",
+                    }}>
+                    BETA
+                  </span>
+                )}
                 {active && (
                   <span className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.9)]" />
                 )}
