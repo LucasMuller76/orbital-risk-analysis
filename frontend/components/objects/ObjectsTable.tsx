@@ -1,9 +1,9 @@
 "use client";
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react";
 import { useObjects } from "@/hooks/useObjects";
 import { RiskBadge } from "./RiskBadge";
+import { ObjectDrawer } from "./ObjectDrawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError } from "@/components/ui/api-error";
 import { cn, formatAltitude, formatCPS, formatNumber } from "@/lib/utils";
@@ -21,7 +21,6 @@ function SortIcon({ active, order }: { active: boolean; order: SortOrder }) {
 }
 
 export function ObjectsTable() {
-  const router = useRouter();
   const { t } = useLanguage();
   const o = t.objects;
 
@@ -30,6 +29,7 @@ export function ObjectsTable() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("predicted_CPS_log");
   const [order, setOrder] = useState<SortOrder>("desc");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const { data, isLoading, error, mutate } = useObjects({ page, limit: 50, risk, search: search || undefined, sort, order });
 
@@ -105,51 +105,29 @@ export function ObjectsTable() {
           <table className="w-full min-w-[560px] text-sm">
             <thead className="border-b border-[rgba(34,211,238,0.08)] bg-[rgba(7,14,36,0.5)]">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                  {o.cols.norad}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                  {o.cols.type}
-                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">{o.cols.norad}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">{o.cols.type}</th>
                 <th className="px-4 py-3 text-left">
-                  <button
-                    onClick={() => handleSort("altitude_km")}
-                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
-                  >
-                    {o.cols.altitude}
-                    <SortIcon active={sort === "altitude_km"} order={order} />
+                  <button onClick={() => handleSort("altitude_km")} className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors">
+                    {o.cols.altitude}<SortIcon active={sort === "altitude_km"} order={order} />
                   </button>
                 </th>
                 <th className="hidden sm:table-cell px-4 py-3 text-left">
-                  <button
-                    onClick={() => handleSort("inclination_deg")}
-                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
-                  >
-                    {o.cols.inclination}
-                    <SortIcon active={sort === "inclination_deg"} order={order} />
+                  <button onClick={() => handleSort("inclination_deg")} className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors">
+                    {o.cols.inclination}<SortIcon active={sort === "inclination_deg"} order={order} />
                   </button>
                 </th>
                 <th className="hidden sm:table-cell px-4 py-3 text-left">
-                  <button
-                    onClick={() => handleSort("velocity_km_s")}
-                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
-                  >
-                    {o.cols.velocity}
-                    <SortIcon active={sort === "velocity_km_s"} order={order} />
+                  <button onClick={() => handleSort("velocity_km_s")} className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors">
+                    {o.cols.velocity}<SortIcon active={sort === "velocity_km_s"} order={order} />
                   </button>
                 </th>
                 <th className="px-4 py-3 text-left">
-                  <button
-                    onClick={() => handleSort("predicted_CPS_log")}
-                    className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors"
-                  >
-                    {o.cols.cps}
-                    <SortIcon active={sort === "predicted_CPS_log"} order={order} />
+                  <button onClick={() => handleSort("predicted_CPS_log")} className="flex items-center text-xs font-medium uppercase tracking-wide text-slate-500 hover:text-slate-200 transition-colors">
+                    {o.cols.cps}<SortIcon active={sort === "predicted_CPS_log"} order={order} />
                   </button>
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                  {o.cols.risk}
-                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">{o.cols.risk}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[rgba(34,211,238,0.05)]">
@@ -157,16 +135,14 @@ export function ObjectsTable() {
                 ? [...Array(10)].map((_, i) => (
                     <tr key={i}>
                       {[...Array(7)].map((_, j) => (
-                        <td key={j} className="px-4 py-3">
-                          <Skeleton className="h-4 w-full" />
-                        </td>
+                        <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-full" /></td>
                       ))}
                     </tr>
                   ))
                 : data?.items.map((obj) => (
                     <tr
                       key={obj.norad_cat_id}
-                      onClick={() => router.push(`/objects/${obj.norad_cat_id}`)}
+                      onClick={() => setSelectedId(obj.norad_cat_id)}
                       className="cursor-pointer transition-colors hover:bg-[rgba(34,211,238,0.04)]"
                     >
                       <td className="px-4 py-3 font-mono text-xs text-slate-400">{obj.norad_cat_id}</td>
@@ -207,6 +183,9 @@ export function ObjectsTable() {
           </div>
         </div>
       )}
+
+      {/* Object detail drawer */}
+      <ObjectDrawer noradId={selectedId} onClose={() => setSelectedId(null)} />
     </div>
   );
 }

@@ -2,8 +2,10 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TiltCard } from "@/components/ui/TiltCard";
 import { useSummary } from "@/hooks/useAnalytics";
-import { formatCPS, formatNumber, formatPct } from "@/lib/utils";
+import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
+import { formatCPS, formatPct } from "@/lib/utils";
 import { Globe, AlertTriangle, ShieldCheck, Activity } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { ApiError } from "@/components/ui/api-error";
@@ -11,6 +13,8 @@ import { ApiError } from "@/components/ui/api-error";
 interface KpiCardProps {
   title: string;
   value: string;
+  rawValue?: number;
+  formatFn?: (n: number) => string;
   sub?: string;
   icon: React.ElementType;
   accentBg: string;
@@ -22,6 +26,8 @@ interface KpiCardProps {
 function KpiCard({
   title,
   value,
+  rawValue,
+  formatFn,
   sub,
   icon: Icon,
   accentBg,
@@ -29,12 +35,16 @@ function KpiCard({
   accentGlow,
   cardClass,
 }: KpiCardProps) {
+  const { display, ref } = useAnimatedNumber(rawValue ?? 0);
+  const displayValue = rawValue !== undefined && formatFn
+    ? formatFn(display)
+    : value;
+
   return (
     <Card className={cardClass}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{title}</CardTitle>
-          {/* Icon container with glow ring */}
           <div
             className={`relative flex h-9 w-9 items-center justify-center rounded-xl ${accentBg} ring-1 ${accentGlow}`}
           >
@@ -52,7 +62,7 @@ function KpiCard({
             backgroundClip: "text",
           }}
         >
-          {value}
+          <span ref={ref}>{displayValue}</span>
         </p>
         {sub && <p className="mt-1 text-xs text-slate-600">{sub}</p>}
       </CardContent>
@@ -62,17 +72,14 @@ function KpiCard({
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.09 },
-  },
+  visible: { transition: { staggerChildren: 0.09 } },
 };
 
 const itemVariants = {
-  hidden:  { opacity: 0, y: 16 },
+  hidden:   { opacity: 0, y: 16, scale: 0.97 },
   visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.42, ease: "easeOut" as const },
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
 };
 
@@ -107,7 +114,9 @@ export function KpiCards() {
   const cards: KpiCardProps[] = [
     {
       title:      t.kpi.totalObjects,
-      value:      formatNumber(data.total_objects),
+      value:      data.total_objects.toLocaleString(),
+      rawValue:   data.total_objects,
+      formatFn:   (n) => n.toLocaleString(),
       sub:        t.kpi.trackedSub,
       icon:       Globe,
       accentBg:   "bg-cyan-500/10",
@@ -126,7 +135,9 @@ export function KpiCards() {
     {
       title:      t.kpi.highRisk,
       value:      formatPct(totalPct(data.risk_counts.HIGH)),
-      sub:        `${formatNumber(data.risk_counts.HIGH)} ${t.kpi.objectsSub}`,
+      rawValue:   data.risk_counts.HIGH,
+      formatFn:   (n) => formatPct((n / data.total_objects) * 100),
+      sub:        `${data.risk_counts.HIGH.toLocaleString()} ${t.kpi.objectsSub}`,
       icon:       AlertTriangle,
       accentBg:   "bg-red-500/10",
       accentText: "text-red-400",
@@ -136,7 +147,9 @@ export function KpiCards() {
     {
       title:      t.kpi.lowRisk,
       value:      formatPct(totalPct(data.risk_counts.LOW)),
-      sub:        `${formatNumber(data.risk_counts.LOW)} ${t.kpi.objectsSub}`,
+      rawValue:   data.risk_counts.LOW,
+      formatFn:   (n) => formatPct((n / data.total_objects) * 100),
+      sub:        `${data.risk_counts.LOW.toLocaleString()} ${t.kpi.objectsSub}`,
       icon:       ShieldCheck,
       accentBg:   "bg-emerald-500/10",
       accentText: "text-emerald-400",
@@ -154,7 +167,9 @@ export function KpiCards() {
     >
       {cards.map((card, i) => (
         <motion.div key={i} variants={itemVariants}>
-          <KpiCard {...card} />
+          <TiltCard>
+            <KpiCard {...card} />
+          </TiltCard>
         </motion.div>
       ))}
     </motion.div>

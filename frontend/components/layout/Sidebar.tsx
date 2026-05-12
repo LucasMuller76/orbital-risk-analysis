@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   Table2,
@@ -18,6 +19,16 @@ interface SidebarProps {
   open: boolean;
   onToggle: () => void;
 }
+
+const navContainerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.12 } },
+};
+
+const navItemVariants = {
+  hidden:  { opacity: 0, x: -12 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: "easeOut" as const } },
+};
 
 export function Sidebar({ open, onToggle }: SidebarProps) {
   const pathname = usePathname();
@@ -45,7 +56,6 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
 
       {/* ── Logo / toggle ── */}
       <div className="relative flex h-16 items-center gap-3 px-4 border-b border-[rgba(34,211,238,0.07)]">
-        {/* Orbital ring decoration behind icon */}
         <div className="relative flex-shrink-0">
           <div className="absolute inset-0 rounded-xl border border-cyan-400/20 scale-[1.35] pointer-events-none" />
           <button
@@ -67,7 +77,6 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
           <span className="text-[10px] text-cyan-400/55 tracking-[0.18em] uppercase">LEO Dashboard</span>
         </div>
 
-        {/* Collapse arrow — desktop only */}
         <button
           onClick={onToggle}
           aria-label="Collapse sidebar"
@@ -78,48 +87,55 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
       </div>
 
       {/* ── Navigation ── */}
-      <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-        {NAV.map(({ href, label, Icon }, index) => {
+      <motion.nav
+        className="flex-1 overflow-y-auto p-3 space-y-0.5"
+        variants={navContainerVariants}
+        initial="hidden"
+        animate={open ? "visible" : "hidden"}
+      >
+        {NAV.map(({ href, label, Icon }) => {
           const active = pathname.startsWith(href);
           return (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => { if (typeof window !== "undefined" && window.innerWidth < 1024) onToggle(); }}
-              className={cn(
-                "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium",
-                "transition-all duration-200",
-                active
-                  ? "bg-cyan-500/10 text-cyan-400 nav-active-glow"
-                  : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200",
-              )}
-              style={{ animationDelay: `${index * 45}ms` }}
-            >
-              {/* Left active bar */}
-              {active && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.85)]" />
-              )}
-
-              <Icon
+            <motion.div key={href} variants={navItemVariants} className="relative">
+              <Link
+                href={href}
+                onClick={() => { if (typeof window !== "undefined" && window.innerWidth < 1024) onToggle(); }}
                 className={cn(
-                  "h-4 w-4 shrink-0 transition-all duration-200",
-                  active ? "text-cyan-400" : "text-slate-500 group-hover:text-slate-300 group-hover:scale-110",
+                  "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium",
+                  "transition-all duration-200",
+                  active
+                    ? "bg-cyan-500/10 text-cyan-400 nav-active-glow"
+                    : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200",
                 )}
-              />
-              <span className="truncate">{label}</span>
+              >
+                {/* Animated active pill — slides between routes */}
+                {active && (
+                  <motion.span
+                    layoutId="active-nav-bar"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.85)]"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
 
-              {/* Active dot indicator */}
-              {active && (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.9)]" />
-              )}
-            </Link>
+                <Icon
+                  className={cn(
+                    "h-4 w-4 shrink-0 transition-all duration-200",
+                    active ? "text-cyan-400" : "text-slate-500 group-hover:text-slate-300 group-hover:scale-110",
+                  )}
+                />
+                <span className="truncate">{label}</span>
+
+                {active && (
+                  <span className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.9)]" />
+                )}
+              </Link>
+            </motion.div>
           );
         })}
-      </nav>
+      </motion.nav>
 
       {/* ── Footer ── */}
       <div className="border-t border-[rgba(34,211,238,0.07)] p-4 space-y-3">
-        {/* Language toggle */}
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-slate-600 mr-0.5">Lang:</span>
           {(["en", "pt"] as const).map((l, i) => (
@@ -140,7 +156,6 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
           ))}
         </div>
 
-        {/* Model info */}
         <div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
             {t.sidebar.model}<br />
@@ -148,7 +163,6 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
           </p>
         </div>
 
-        {/* Credits */}
         <div className="border-t border-[rgba(255,255,255,0.04)] pt-3">
           <p className="text-[11px] text-slate-600 leading-relaxed">
             {t.sidebar.developedBy}<br />
@@ -159,7 +173,6 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
         </div>
       </div>
 
-      {/* Bottom accent gradient line */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent" />
     </aside>
   );

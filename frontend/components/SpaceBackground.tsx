@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 
 // Van der Corput low-discrepancy sequence — deterministic, uniform, no hydration mismatch
 function vdc(n: number, base: number): number {
@@ -38,6 +39,15 @@ const STARS: Star[] = Array.from({ length: 110 }, (_, i) => {
 });
 
 export function SpaceBackground() {
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      document.documentElement.style.setProperty("--cursor-x", `${e.clientX}px`);
+      document.documentElement.style.setProperty("--cursor-y", `${e.clientY}px`);
+    };
+    window.addEventListener("mousemove", handleMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, []);
+
   return (
     <div
       className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none"
@@ -151,6 +161,9 @@ export function SpaceBackground() {
           background: "linear-gradient(to top, rgba(2, 6, 23, 0.6) 0%, transparent 100%)",
         }}
       />
+
+      {/* Cursor spotlight — follows mouse via CSS custom properties */}
+      <div className="cursor-spotlight fixed inset-0 z-[1] pointer-events-none" />
     </div>
   );
 }
