@@ -329,20 +329,21 @@ export default function LandingPage() {
       {/* ── Stats ────────────────────────────────────────────── */}
       <section className="relative py-20 sm:py-28 px-5"
         style={{ background: "linear-gradient(180deg, transparent, rgba(34,211,238,0.015) 50%, transparent)" }}>
-        <div className="max-w-3xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 text-center">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-10 text-center">
             {[
               { label: "TRACKED OBJECTS", node: <AnimatedNumber value={27994} /> },
               { label: "BAND-LEVEL R²",   node: <span>0.98</span> },
               { label: "RISK LEVELS",     node: <AnimatedNumber value={3} duration={800} /> },
             ].map(({ label, node }, i) => (
               <motion.div key={i}
+                className="min-w-0 overflow-hidden"
                 initial={{ opacity: 0, y: 32, scale: 0.92, filter: "blur(4px)" }}
                 whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.65, delay: i * 0.14, ease: [0.16, 1, 0.3, 1] }}
               >
-                <p className="text-6xl lg:text-7xl font-black text-cyan-400 mb-2"
+                <p className="text-5xl lg:text-6xl font-black text-cyan-400 mb-2"
                   style={{ fontFamily: "var(--font-orbitron)" }}>
                   {node}
                 </p>
